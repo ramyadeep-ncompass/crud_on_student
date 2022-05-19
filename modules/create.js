@@ -6,7 +6,7 @@ module.exports.createStudent = (req, res) => {
     mySqlConn.query(
         qry, [student.id, student.name, student.dept, student.cgpa],
         (err, results, fields) => {
-            res.send(results);
+            res.send(`${results.affectedRows} row added.`);
         }
     );
 }
