@@ -1,1 +1,1 @@
-var qry = 'DELETE FROM student WHERE id = ?';;
+var qry = 'DELETE FROM student WHERE id = ?';
