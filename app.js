@@ -1,15 +1,12 @@
 const express = require('express');
+const { getAllStudent } = require('./modules/readall');
+const { createStudent } = require('./modules/create');
 
 const App = express();
+App.use(express.urlencoded());
 
-App.get('/', (req, res) => {
-    res.send('<h1>Hello from express</h1>')
-})
-
-App.get('/home', (req, res) => {
-    res.send('<h1>Home page</h1>')
-})
-
+App.get('/api/student/all', getAllStudent);
+App.get('/api/student/new/id/:id/name/:name/dept/:dept/cgpa/:cgpa', createStudent);
 
 App.listen(3000, () => {
     console.log('Connected to localhost:3000');
