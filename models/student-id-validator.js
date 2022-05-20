@@ -1,17 +1,17 @@
 const Joi = require('joi');
 
-const validateUser = (user) => {
+const validateStudentId = (studentId) => {
+    console.log((studentId));
     let validationResponse = {
         isValid: true,
         message: "",
     };
 
     const schema = Joi.object({
-        email: Joi.string().email().required(),
-        password: Joi.string().min(8).required()
+        id: Joi.string().length(4).required()
     });
 
-    const validationResult = schema.validate(user);
+    const validationResult = schema.validate(studentId);
 
     if (validationResult.error) {
         validationResponse.isValid = false;
@@ -21,4 +21,4 @@ const validateUser = (user) => {
     return validationResponse;
 };
 
-module.exports = { validateUser };
+module.exports = { validateStudentId };
