@@ -5,7 +5,10 @@ module.exports.deleteStudent = (req, res) => {
     mySqlConn.query(
         qry, [req.params.id],
         (err, results, fields) => {
-            res.send(`${results.affectedRows} rows deleted.`);
+            if (err) {
+                res.status(500).send(err);
+            }
+            res.status(200).send(`${results.affectedRows} rows deleted.`);
         }
     );
 }

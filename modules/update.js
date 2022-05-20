@@ -6,8 +6,9 @@ module.exports.updateStudent = (req, res) => {
     mySqlConn.query(
         qry, [student.name, student.dept, student.cgpa, student.id],
         (err, results, fields) => {
-            if (err)
-                console.log(err);
+            if (err) {
+                res.status(500).send(err);
+            }
             res.send(`${results.affectedRows} row effected!`);
         }
     );

@@ -4,7 +4,10 @@ module.exports.getAllStudent = (req, res) => {
     mySqlConn.query(
         'SELECT * FROM student;',
         function(err, results, fields) {
-            res.send(results);
+            if (err) {
+                res.status(500).send(err);
+            }
+            res.status(200).send(results);
         }
     );
 }

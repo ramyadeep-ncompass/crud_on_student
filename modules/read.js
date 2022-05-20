@@ -5,7 +5,10 @@ module.exports.getStudent = (req, res) => {
     mySqlConn.query(
         qry, [req.params.id],
         (err, results, fields) => {
-            res.send(results);
+            if (err) {
+                res.status(500).send(err);
+            }
+            res.status(200).send(results);
         }
     );
 }
