@@ -1,9 +1,10 @@
 const express = require('express');
-const { router } = require('./route');
+const { router } = require('./route/route');
 
 const App = express();
 
 App.use(express.json());
+App.use(express.urlencoded({ extended: true }));
 
 App.use('/api', router);
 
