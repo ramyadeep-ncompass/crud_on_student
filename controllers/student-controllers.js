@@ -1,12 +1,13 @@
 const { mySqlConn } = require('../utilities/db');
 
 const createStudent = (req, res) => {
-    let student = req.params;
+    let student = req.body;
     var qry = 'INSERT INTO student (id,name,department,cgpa) VALUES (? ,? ,? ,? );'
     mySqlConn.query(
         qry, [student.id, student.name, student.dept, student.cgpa],
         (err, results, fields) => {
             if (err) {
+                console.log(student);
                 res.status(500).send(err);
             }
             res.status(200).send(`${results.affectedRows} row added.`);
@@ -15,7 +16,7 @@ const createStudent = (req, res) => {
 };
 
 const updateStudent = (req, res) => {
-    let student = req.params;
+    let student = req.body;
     var qry = 'UPDATE student SET name = ? , department = ?, cgpa = ? WHERE id = ?;'
     mySqlConn.query(
         qry, [student.name, student.dept, student.cgpa, student.id],
@@ -31,7 +32,7 @@ const updateStudent = (req, res) => {
 const deleteStudent = (req, res) => {
     let qry = 'DELETE FROM student WHERE id = ?;';
     mySqlConn.query(
-        qry, [req.params.id],
+        qry, [req.query.id],
         (err, results, fields) => {
             if (err) {
                 res.status(500).send(err);
@@ -44,7 +45,7 @@ const deleteStudent = (req, res) => {
 const getStudent = (req, res) => {
     let qry = 'SELECT * FROM student WHERE id = ?;';
     mySqlConn.query(
-        qry, [req.params.id],
+        qry, [req.query.id],
         (err, results, fields) => {
             if (err) {
                 res.status(500).send(err);

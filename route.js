@@ -8,14 +8,14 @@ const {
     createStudent
 } = require('./controllers/student-controllers');
 
-router.get('/create/student/new/id/:id/name/:name/dept/:dept/cgpa/:cgpa', createStudent);
+router.get('/create/student/new', createStudent);
 
 router.get('/read/student/all', getAllStudent);
 
-router.get('/read/student/id/:id', getStudent);
+router.get('/read/student/', getStudent);
 
-router.get('/update/student/id/:id/name/:name/dept/:dept/cgpa/:cgpa', updateStudent);
+router.get('/update/student', updateStudent);
 
-router.get('/delete/student/id/:id', deleteStudent);
+router.get('/delete/student', deleteStudent);
 
 module.exports = { router };
