@@ -1,8 +1,0 @@
-{
-    "db_config": {
-        "db_user": "root",
-        "db_host": "localhost",
-        "db_password": "",
-        "db_database": "usecase2"
-    }
-}
