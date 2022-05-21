@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const validateStudentId = (studentId) => {
-    console.log((studentId));
+
     let validationResponse = {
         isValid: true,
         message: "",
@@ -15,7 +15,8 @@ const validateStudentId = (studentId) => {
 
     if (validationResult.error) {
         validationResponse.isValid = false;
-        validationResponse.message = validationResult.error.details[0].message;
+        validationResponse.message = validationResult.error.details[0].message.replace('\"', '')
+            .replace('\"', '');
     }
 
     return validationResponse;

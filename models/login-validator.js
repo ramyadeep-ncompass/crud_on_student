@@ -15,7 +15,8 @@ const validateUser = (user) => {
 
     if (validationResult.error) {
         validationResponse.isValid = false;
-        validationResponse.message = validationResult.error.details[0].message;
+        validationResponse.message = validationResult.error.details[0].message.replace('\"', '')
+            .replace('\"', '');
     }
 
     return validationResponse;

@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { authenticateStudent } = require('../auth/auth');
 
 const {
     getAllStudent,
@@ -9,17 +10,18 @@ const {
     login
 } = require('../controllers/student-controllers');
 
-router.post('/create/student/new', createStudent);
+router.get('/read/student/', getStudent);
+
+router.post('/login', login);
+
+router.use(authenticateStudent)
 
 router.get('/read/student/all', getAllStudent);
 
-router.get('/read/student/', getStudent);
+router.post('/create/student/new', createStudent);
 
 router.patch('/update/student', updateStudent);
 
 router.delete('/delete/student', deleteStudent);
-
-router.post('/login', login);
-
 
 module.exports = { router };
