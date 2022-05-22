@@ -1,3 +1,5 @@
+const config = require('config');
+
 const { mySqlConn } = require('../utilities/db');
 const { validateUser } = require('../models/login-validator');
 const { validateStudent } = require('../models/student-validator');
@@ -169,7 +171,9 @@ const login = (req, res) => {
             res.status(200).send({
                 success: true,
                 message: `Logged in successfully`,
-                data: {}
+                data: {
+                    token: config.get('authentication')
+                }
             });
         } else {
             res.status(400).send({
