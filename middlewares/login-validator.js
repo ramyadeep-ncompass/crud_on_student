@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-module.exports.validateUser = (req, res, next) => {
+const validateUser = (req, res, next) => {
 
     const schema = Joi.object({
         email: Joi.string().email().required(),
@@ -20,3 +20,4 @@ module.exports.validateUser = (req, res, next) => {
     }
 
 }
+module.exports = { validateUser }

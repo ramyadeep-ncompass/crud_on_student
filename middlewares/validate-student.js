@@ -28,7 +28,7 @@ const validateStudentId = (req, res, next) => {
         id: Joi.string().length(4).required()
     });
 
-    const status = schema.validate(req.body);
+    const status = schema.validate(req.query);
     if (status.error) {
         res.send({
             success: false,
