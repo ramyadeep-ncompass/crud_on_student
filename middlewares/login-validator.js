@@ -4,10 +4,10 @@ const validateUser = (req, res, next) => {
 
     const schema = Joi.object({
         email: Joi.string().email().required(),
-        password: Joi.string().min(8).required()
+        id: Joi.string().length(4).required()
     });
 
-    const status = schema.validate(req.body);
+    const status = schema.validate(req.query);
     if (status.error) {
         res.send({
             success: false,

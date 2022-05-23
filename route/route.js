@@ -3,6 +3,7 @@ const router = require("express").Router();
 const { validateStudent, validateStudentId } = require('../middlewares/validate-student');
 const { authenticateToken } = require('../utilities/verify');
 const { errorHandler } = require('../middlewares/error-handler');
+const { validateUser } = require('../middlewares/login-validator');
 
 const {
     getAllStudent,
@@ -14,9 +15,9 @@ const {
     test
 } = require('../controllers/student-controllers');
 
-router.post('/login', login);
+router.post('/login', validateUser, login);
 
-// router.use(authenticateToken);
+router.use(authenticateToken);
 
 router.get('/read/student/', validateStudentId, getStudent);
 

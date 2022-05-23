@@ -1,4 +1,4 @@
-const { mySqlConn, runQuery } = require('../utilities/db');
+const { runQuery } = require('../utilities/db');
 const { CompressResponse } = require('../utilities/response-compressor');
 const { signStudent } = require('../utilities/auth');
 const { CustomError } = require('../middlewares/custom-error');
@@ -154,6 +154,8 @@ const getAllStudent = (req, res) => {
 };
 
 const login = (req, res) => {
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Content-Type', 'application/json');
     const user = req.body;
     const qry = "SELECT * FROM admin WHERE email = ? AND id = ?";
     const qryParams = [req.query.email, req.query.id];
@@ -163,23 +165,23 @@ const login = (req, res) => {
                 success: false,
                 message: err.message
             }));
-        } else {
-            if (result.length > 0) {
-                res.send(await CompressResponse({
-                    success: true,
-                    message: "Id found",
-                    data: {
-                        token: await signStudent({ id: req.query.id })
-                    }
-                }))
-            } else {
-                res.send(CompressResponse({
-                    success: false,
-                    message: "Id Not found",
-                }))
-            }
+            return
         }
-    })
+        if (result.length === 0) {
+            res.send(await CompressResponse({
+                success: false,
+                message: "Id Not found",
+            }));
+        } else {
+            res.send(await CompressResponse({
+                success: true,
+                message: "Id found",
+                data: {
+                    token: await signStudent({ id: req.query.id })
+                }
+            }))
+        }
+    });
 };
 
 const test = (req, res, next) => {
