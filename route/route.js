@@ -16,7 +16,7 @@ const {
 
 router.post('/login', login);
 
-router.use(authenticateToken);
+// router.use(authenticateToken);
 
 router.get('/read/student/', validateStudentId, getStudent);
 
@@ -28,7 +28,7 @@ router.patch('/update/student', validateStudent, updateStudent);
 
 router.delete('/delete/student', validateStudentId, deleteStudent);
 
-router.get('/err', test);
+router.get('/test', test);
 
 router.use(errorHandler);
 

@@ -1,7 +1,6 @@
-const { CustomError } = require('../middlewares/custom-error');
 const errorHandler = (err, req, res, next) => {
+    console.log('Error handler called');
     const statusCode = err.errCode ? err.errCode : 500;
-    console.log(err instanceof CustomError);
     res.status(statusCode);
     res.send({
         success: false,

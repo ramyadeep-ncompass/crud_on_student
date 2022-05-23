@@ -1,29 +1,29 @@
-const config = require('config');
-
-const { mySqlConn } = require('../utilities/db');
-const { validateStudent } = require('../models/login-validator');
+const { mySqlConn, runQuery } = require('../utilities/db');
 const { CompressResponse } = require('../utilities/response-compressor');
-const { signStudent, signStudent2 } = require('../utilities/auth');
+const { signStudent } = require('../utilities/auth');
+const { CustomError } = require('../middlewares/custom-error');
 
-const createStudent = (req, res) => {
+const createStudent = (req, res, next) => {
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Content-Type', 'application/json');
     let student = req.body;
     let qry = 'INSERT INTO student (id,name,department,cgpa) VALUES (? ,? ,? ,? );';
     let qryParams = [student.id, student.name, student.dept, student.cgpa];
-    mySqlConn.query(
+    runQuery(
         qry, qryParams,
-        (err, results) => {
+        async(err, results) => {
             if (err) {
-                res.status(500).send({
+                res.status(500).send(await CompressResponse({
                     success: false,
                     message: err.message,
                     data: results
-                });
+                }));
             }
-            res.status(200).send({
+            res.status(200).send(await CompressResponse({
                 success: true,
                 message: `${results.affectedRows} row effected`,
                 data: results
-            });
+            }));
         }
     );
 
@@ -31,24 +31,32 @@ const createStudent = (req, res) => {
 };
 
 const updateStudent = (req, res) => {
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Content-Type', 'application/json');
     let student = req.body;
     let qry = 'UPDATE student SET name = ? , department = ?, cgpa = ? WHERE id = ?;';
     let qryParams = [student.name, student.dept, student.cgpa, student.id];
-    mySqlConn.query(
+    runQuery(
         qry, qryParams,
-        (err, results, fields) => {
+        async(err, results) => {
             if (err) {
-                res.status(500).send({
+                res.status(500).send(await CompressResponse({
                     success: false,
                     message: err.message,
                     data: results
-                });
+                }));
+            }
+            if (results.affectedRows === 0) {
+                res.status(400).send(await CompressResponse({
+                    success: false,
+                    message: `Student with id ${qryParams[3]} Not Found!`,
+                }));
             } else {
-                res.status(200).send({
+                res.status(200).send(await CompressResponse({
                     success: true,
                     message: `${results.affectedRows} row updated.`,
                     data: results
-                });
+                }));
             }
         }
     );
@@ -56,31 +64,33 @@ const updateStudent = (req, res) => {
 };
 
 const deleteStudent = (req, res) => {
+    res.setHeader('Content-Encoding', 'gzip');
+    res.setHeader('Content-Type', 'application/json');
     let qry = 'DELETE FROM student WHERE id = ?;';
     let qryParams = [req.query.id];
-    mySqlConn.query(
+    runQuery(
         qry, qryParams,
-        (err, results) => {
+        async(err, results) => {
             if (err) {
-                res.status(500).send({
+                res.status(500).send(await CompressResponse({
                     success: false,
                     message: err.message,
                     data: results
-                });
+                }));
             }
             if (results.affectedRows === 0) {
-                res.status(400).send({
+                res.status(400).send(await CompressResponse({
                     success: false,
                     message: `Student with id ${qryParams} Not Found!`,
-                    data: results
-                });
+                }));
+
 
             } else {
-                res.status(400).send({
+                res.status(400).send(await CompressResponse({
                     success: true,
                     message: `${results.affectedRows} row deleted.`,
                     data: results
-                });
+                }));
             }
 
         }
@@ -93,7 +103,7 @@ const getStudent = async(req, res) => {
     res.setHeader('Content-Type', 'application/json');
     let qry = 'SELECT * FROM student WHERE id = ?;';
     let qryParams = [req.query.id];
-    mySqlConn.query(
+    runQuery(
         qry, qryParams,
         async(err, results) => {
             if (err) {
@@ -103,24 +113,17 @@ const getStudent = async(req, res) => {
                     data: results
                 }));
             }
-
-            if (results.affectedRows === 0) {
+            if (results.length == 0) {
                 res.status(400).send(await CompressResponse({
                     success: false,
                     message: `Student with id ${qryParams} Not Found!`,
-                    data: results,
                 }));
             } else {
-                let token = await signStudent2({
-                    id: req.query.id
-                }).then(async(token) => {
-                    res.status(200).send(await CompressResponse({
-                        success: true,
-                        message: `${results.length} Student found`,
-                        data: token,
-
-                    }));
-                });
+                res.status(200).send(await CompressResponse({
+                    success: true,
+                    message: `${results.length} Student found`,
+                    data: results,
+                }));
 
             }
 
@@ -132,51 +135,48 @@ const getStudent = async(req, res) => {
 const getAllStudent = (req, res) => {
     res.setHeader('Content-Encoding', 'gzip');
     res.setHeader('Content-Type', 'application/json');
-    mySqlConn.query(
-        'SELECT * FROM student;',
-        async(err, results) => {
-            if (err) {
-                res.status(500).send(await CompressResponse({
-                    success: true,
-                    message: err.message,
-                    data: results
-                }));
-            } else {
-                res.status(200).send(await CompressResponse({
-                    success: true,
-                    message: `${results.length} row fetched`,
-                    data: results
-                }));
-            }
-
+    const qry = 'SELECT * FROM student';
+    runQuery(qry, async(err, results) => {
+        if (err) {
+            res.status(500).send(await CompressResponse({
+                success: true,
+                message: err.message,
+                data: results
+            }));
+        } else {
+            res.status(200).send(await CompressResponse({
+                success: true,
+                message: `${results.length} row fetched`,
+                data: results
+            }));
         }
-    );
+    });
 };
 
 const login = (req, res) => {
     const user = req.body;
     const qry = "SELECT * FROM admin WHERE email = ? AND id = ?";
     const qryParams = [req.query.email, req.query.id];
-    mySqlConn.query(qry, qryParams, async(err, result) => {
+    runQuery(qry, qryParams, async(err, result) => {
         if (err) {
-            res.send({
+            res.send(await CompressResponse({
                 success: false,
                 message: err.message
-            });
+            }));
         } else {
             if (result.length > 0) {
-                res.send({
+                res.send(await CompressResponse({
                     success: true,
                     message: "Id found",
-                    data: await signStudent2({
-                        id: req.query.id
-                    })
-                })
+                    data: {
+                        token: await signStudent({ id: req.query.id })
+                    }
+                }))
             } else {
-                res.send({
+                res.send(CompressResponse({
                     success: false,
                     message: "Id Not found",
-                })
+                }))
             }
         }
     })
@@ -184,7 +184,7 @@ const login = (req, res) => {
 
 const test = (req, res, next) => {
     const err = new CustomError('This is a custom error');
-    err.errCode = 401;
+    err.errCode = 402;
     next(err);
 }
 

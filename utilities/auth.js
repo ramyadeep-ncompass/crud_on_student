@@ -1,15 +1,9 @@
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const signStudent = (data) => {
-    return new Promise((resolve, reject) => {
-        var token = jwt.sign(data, 'privateKey');
-        resolve(token);
-    })
-}
-
-const signStudent2 = (data) => {
     return new Promise((resolve) => {
-        jwt.sign(data, 'privateKey', { expiresIn: '30m' }, (err, token) => {
+        jwt.sign(data, process.env.JWT_KEY, { expiresIn: '30m' }, (err, token) => {
             resolve(token);
         });
     })
@@ -18,4 +12,4 @@ const signStudent2 = (data) => {
 
 
 
-module.exports = { signStudent, signStudent2 }
+module.exports = { signStudent }
