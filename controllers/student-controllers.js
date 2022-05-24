@@ -177,35 +177,34 @@ const getAllStudent = (req, res) => {
     });
 };
 
-const login = (req, res) => {
+const login = async(req, res) => {
     res.setHeader('Content-Encoding', 'gzip');
     res.setHeader('Content-Type', 'application/json');
     const user = req.body;
     const qry = "SELECT * FROM admin WHERE email = ? AND id = ?";
     const qryParams = [req.query.email, req.query.id];
-    runQuery(qry, qryParams, async(err, result) => {
-        if (err) {
-            res.send(await CompressResponse({
-                success: false,
-                message: err.message
-            }));
-            return
-        }
-        if (result.length === 0) {
-            res.send(await CompressResponse({
-                success: false,
-                message: "Id Not found",
-            }));
-        } else {
-            res.send(await CompressResponse({
-                success: true,
-                message: "Id found",
-                data: {
-                    token: await signStudent({ id: req.query.id })
-                }
-            }))
-        }
-    });
+    let result = await runQueryAsync(qry, qryParams);
+    if (result.error) {
+        res.send(await CompressResponse({
+            success: false,
+            message: result.error.message
+        }));
+        return
+    }
+    if (result.result.length === 0) {
+        res.send(await CompressResponse({
+            success: false,
+            message: "Id Not found",
+        }));
+    } else {
+        res.send(await CompressResponse({
+            success: true,
+            message: "Id found",
+            data: {
+                token: await signStudent({ id: req.query.id })
+            }
+        }))
+    }
 };
 
 const test = async(req, res, next) => {
