@@ -1,4 +1,4 @@
-const { runQuery } = require('../utilities/db');
+const { runQuery, runQueryAsync } = require('../utilities/db');
 const { CompressResponse } = require('../utilities/response-compressor');
 const { signStudent } = require('../utilities/auth');
 const { ApiError } = require('../middlewares/custom-error');
@@ -103,32 +103,56 @@ const getStudent = async(req, res) => {
     res.setHeader('Content-Type', 'application/json');
     let qry = 'SELECT * FROM student WHERE id = ?;';
     let qryParams = [req.query.id];
-    runQuery(
-        qry, qryParams,
-        async(err, results) => {
-            if (err) {
-                res.status(500).send(await CompressResponse({
-                    success: false,
-                    message: err.message,
-                    data: results
-                }));
-            }
-            if (results.length == 0) {
-                res.status(400).send(await CompressResponse({
-                    success: false,
-                    message: `Student with id ${qryParams} Not Found!`,
-                }));
-            } else {
-                res.status(200).send(await CompressResponse({
-                    success: true,
-                    message: `${results.length} Student found`,
-                    data: results,
-                }));
+    // runQuery(
+    //     qry, qryParams,
+    //     async(err, results) => {
+    //         if (err) {
+    //             res.status(500).send(await CompressResponse({
+    //                 success: false,
+    //                 message: err.message,
+    //                 data: results
+    //             }));
+    //             return
+    //         }
+    //         if (results.length == 0) {
+    //             res.status(400).send(await CompressResponse({
+    //                 success: false,
+    //                 message: `Student with id ${qryParams} Not Found!`,
+    //             }));
+    //         } else {
+    //             res.status(200).send(await CompressResponse({
+    //                 success: true,
+    //                 message: `${results.length} Student found`,
+    //                 data: results,
+    //             }));
 
-            }
+    //         }
 
-        }
-    );
+    //     }
+    // );
+    let result = await runQueryAsync(qry, qryParams);
+    if (result.error) {
+        res.status(500).send(await CompressResponse({
+            success: false,
+            message: result.error.message,
+            data: result
+        }));
+        return
+    }
+    if (result.result.length == 0) {
+        res.status(400).send(await CompressResponse({
+            success: false,
+            message: `Student with id ${qryParams} Not Found!`,
+        }));
+    } else {
+        res.status(200).send(await CompressResponse({
+            success: true,
+            message: `${result.result.length} Student found`,
+            data: result,
+        }));
+
+    }
+
 
 };
 
@@ -184,8 +208,10 @@ const login = (req, res) => {
     });
 };
 
-const test = (req, res, next) => {
-    next(ApiError.badRequest('Bad request'));
+const test = async(req, res, next) => {
+    let qry = "select * from student";
+    let result = await runQueryAsync(qry);
+    res.send(result);
 }
 
 module.exports = { getAllStudent, getStudent, deleteStudent, updateStudent, createStudent, login, test }

@@ -14,7 +14,18 @@ const runQuery = (query, params, callback) => {
     mySqlConn.query(query, params, callback);
 }
 
-module.exports = { runQuery }
+const runQueryAsync = async(query, params) => {
+    return new Promise((resolve) => {
+        mySqlConn.query(query, params, (error, result) => {
+            if (error)
+                resolve({ error });
+            else
+                resolve({ result })
+        });
+    })
+}
+
+module.exports = { runQuery, runQueryAsync }
 
 // const config = require('config');
 // const dbConfig = config.get('db_config');
