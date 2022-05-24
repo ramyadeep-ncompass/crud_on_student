@@ -1,7 +1,7 @@
 const { runQuery } = require('../utilities/db');
 const { CompressResponse } = require('../utilities/response-compressor');
 const { signStudent } = require('../utilities/auth');
-const { CustomError } = require('../middlewares/custom-error');
+const { ApiError } = require('../middlewares/custom-error');
 
 const createStudent = (req, res, next) => {
     res.setHeader('Content-Encoding', 'gzip');
@@ -185,9 +185,7 @@ const login = (req, res) => {
 };
 
 const test = (req, res, next) => {
-    const err = new CustomError('This is a custom error');
-    err.errCode = 402;
-    next(err);
+    next(ApiError.badRequest('Bad request'));
 }
 
 module.exports = { getAllStudent, getStudent, deleteStudent, updateStudent, createStudent, login, test }

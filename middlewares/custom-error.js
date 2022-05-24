@@ -1,9 +1,18 @@
-class CustomError extends Error {
+class ApiError extends Error {
 
-    CustomError(message) {
+    constructor(code, message) {
+        this.code = code;
         this.message = message;
+    }
+
+    static badRequest(message) {
+        return new ApiError(400, message);
+    }
+
+    static internalError(message) {
+        return new ApiError(500, message);
     }
 }
 
 
-module.exports = { CustomError };
+module.exports = { ApiError };

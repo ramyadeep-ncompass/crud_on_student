@@ -17,7 +17,7 @@ const {
 
 router.post('/login', validateUser, login);
 
-router.use(authenticateToken);
+// router.use(authenticateToken);
 
 router.get('/read/student/', validateStudentId, getStudent);
 
