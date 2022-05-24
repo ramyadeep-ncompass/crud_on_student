@@ -18,6 +18,7 @@ const createStudent = async(req, res, next) => {
             message: dbResponse.error.message,
             data: dbResponse.error
         }));
+        return;
     }
     res.status(200).send(await CompressResponse({
         success: true,
@@ -43,6 +44,7 @@ const updateStudent = async(req, res) => {
             message: dbResponse.error.message,
             data: dbResponse.error
         }));
+        return;
     }
     if (dbResponse.result.affectedRows === 0) {
         res.status(400).send(await CompressResponse({
@@ -74,6 +76,7 @@ const deleteStudent = async(req, res) => {
             message: dbResponse.error.message,
             data: dbResponse.error
         }));
+        return;
     }
     if (dbResponse.result.affectedRows === 0) {
         res.status(400).send(await CompressResponse({
@@ -107,24 +110,20 @@ const getStudent = async(req, res) => {
             message: dbResponse.error.message,
             data: dbResponse.error
         }));
-        return
+        return;
     }
     if (dbResponse.result.length == 0) {
         res.status(400).send(await CompressResponse({
             success: false,
             message: `Student with id ${qryParams} Not Found!`,
-            data: dbResponse.result
         }));
     } else {
         res.status(200).send(await CompressResponse({
             success: true,
-            message: `${result.result.length} Student found`,
+            message: `${dbResponse.result.length} Student found`,
             data: dbResponse.result,
         }));
-
     }
-
-
 };
 
 const getAllStudent = async(req, res) => {
