@@ -16,7 +16,7 @@ App.get('/', (req, res) => {
 })
 
 App.use('/api', router);
-const port = process.env.PORT;
-App.listen(3000, () => {
-    console.log(`Connected to localhost:3000`);
+const port = process.env.SERVER_PORT;
+App.listen(port, () => {
+    console.log(`Connected to localhost:${port}`);
 });

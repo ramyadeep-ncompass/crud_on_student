@@ -14,6 +14,7 @@ module.exports.authenticateToken = (req, res, next) => {
         });
         return;
     }
+
     jwt.verify(token, privateKey, (err, userData) => {
         if (err) return res.status(403).send({
             success: false,

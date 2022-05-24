@@ -1,7 +1,7 @@
 const { runQueryAsync } = require('../utilities/db');
 const { CompressResponse } = require('../utilities/response-compressor');
 const { signStudent } = require('../utilities/auth');
-const { ApiError } = require('../middlewares/custom-error');
+const ApiError = require('../middlewares/custom-error');
 
 const createStudent = async(req, res, next) => {
     res.setHeader('Content-Encoding', 'gzip');
@@ -149,7 +149,7 @@ const getAllStudent = async(req, res) => {
     }
 };
 
-const login = async(req, res) => {
+const login = async(req, res, next) => {
     res.setHeader('Content-Encoding', 'gzip');
     res.setHeader('Content-Type', 'application/json');
     const user = req.query;
@@ -166,12 +166,13 @@ const login = async(req, res) => {
         return
     }
     if (dbResponse.result.length === 0) {
-        res.send(await CompressResponse({
+        res.status(400).send(await CompressResponse({
             success: false,
             message: "Id Not found",
         }));
+        // next(Error('Id not found'));
     } else {
-        res.send(await CompressResponse({
+        res.status(200).send(await CompressResponse({
             success: true,
             message: "Id found",
             data: {
@@ -182,9 +183,7 @@ const login = async(req, res) => {
 };
 
 const test = async(req, res, next) => {
-    let qry = "select * from student";
-    let result = await runQueryAsync(qry);
-    res.send(result);
+    next(ApiError.internalError("something broke"));
 }
 
 module.exports = { getAllStudent, getStudent, deleteStudent, updateStudent, createStudent, login, test }
